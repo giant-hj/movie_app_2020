@@ -1,3 +1,3 @@
 # Movie App 2020
 
-React JS Fundamentals Course (2020 Update!)
+git remote add origin https://gianthj@bitbucket.org/gianthj/movie_app_2020.git
