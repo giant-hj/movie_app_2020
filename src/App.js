@@ -1,49 +1,41 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import axios from 'axios';
+import Movie from './Movie';
+import "./App.css"
 
-const foodILike = [
-  {
-    "id": 1,
-    "name": "Kimch",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/f/f8/Various_kimchi.jpg",
-    rating: 4
-  }, {
-    "id": 2,
-    "name": "Samgyeopsal",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Samgyeopsal-gui.jpg/1920px-Samgyeopsal-gui.jpg",
-    rating: 4.5
-  }, {
-    "id": 3,
-    "name": "Bibimbap",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Dolsot-bibimbap.jpg/440px-Dolsot-bibimbap.jpg",
-    rating: 4.8
+class App extends React.Component {
+  state = {
+    isLoading: true,
+    movies: []
   }
-]
-
-function Food({ name, picture, rating }) {
-  return (
-    <div>
-      <h1>I like {name}.</h1>
-      <h4>rating: {rating}/5.0</h4>
-      <img src={picture} alt={name} />
+  getMovies = async () => {
+    const {
+      data: {
+        data: { movies }
+      }
+    } = await axios.get("https://yts-proxy.now.sh/list_movies.json?sort_by=rating");
+    this.setState({ movies, isLoading: false });
+  }
+  componentDidMount() {
+    this.getMovies();
+  }
+  render() {
+    const { isLoading, movies } = this.state
+    return <div>
+      {isLoading ? (
+        <div className="loader">
+          <span className="loader__text">Loading...</span>
+        </div>
+      ) : (
+        <div className="movies">
+          {movies.map(movie => (
+            <Movie key={movie.id} id={movie.id} year={movie.year} summary={movie.summary} 
+            title={movie.title} poster={movie.medium_cover_image} genres={movie.genres} />
+          ))}
+        </div>
+      )}
     </div>
-  );
+  }
 }
-
-Food.propTypes = {
-  name: PropTypes.string.isRequired,
-  picture: PropTypes.string.isRequired,
-  rating: PropTypes.number.isRequired
-}
-
-function App() {
-  return (
-    <div>
-      {foodILike.map(dish => (
-        <Food key={dish.id} name={dish.name} picture={dish.image} rating={dish.rating} />
-      ))}
-    </div>
-  );
-}
-
+//
 export default App;
